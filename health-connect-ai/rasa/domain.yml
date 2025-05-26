@@ -1,0 +1,54 @@
+version: "3.1"
+intents:
+  - greet
+  - symptom_check
+  - medication_faq
+  - schedule_appointment
+  - escalate_to_human
+  - provide_feedback
+
+entities:
+  - symptom
+  - medication
+  - appointment_date
+  - feedback
+
+slots:
+  symptom:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: symptom
+  medication:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: medication
+  appointment_date:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: appointment_date
+  feedback:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: feedback
+
+responses:
+  utter_greet:
+    - text: "Hello! How can I assist you today?"
+  utter_ask_symptom:
+    - text: "Please describe your symptoms."
+  utter_ask_medication:
+    - text: "Which medication do you have questions about?"
+  utter_schedule_appointment:
+    - text: "What date and time would you prefer for your appointment?"
+  utter_escalate:
+    - text: "I'm escalating your request to a healthcare professional."
+  utter_feedback:
+    - text: "Thank you for your feedback!"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

@@ -1,0 +1,43 @@
+version: "3.1"
+nlu:
+- intent: greet
+  examples: |
+    - Hi
+    - Hello
+    - Good morning
+    - Hey there
+
+- intent: symptom_check
+  examples: |
+    - I have a headache
+    - I'm feeling dizzy
+    - I have a sore throat
+    - My stomach hurts
+
+- intent: medication_faq
+  examples: |
+    - Can I take ibuprofen?
+    - What are the side effects of paracetamol?
+    - How often should I take my medication?
+    - Is it safe to take aspirin?
+
+- intent: schedule_appointment
+  examples: |
+    - I want to book an appointment
+    - Can I see a doctor tomorrow?
+    - Schedule a visit for next week
+    - I need to see a physician
+
+- intent: escalate_to_human
+  examples: |
+    - I want to talk to a real doctor
+    - Can you connect me to a human?
+    - I need to speak with a healthcare professional
+    - This is urgent, escalate please
+
+- intent: provide_feedback
+  examples: |
+    - The service was great
+    - I am not satisfied
+    - The bot was helpful
+    - I have some suggestions

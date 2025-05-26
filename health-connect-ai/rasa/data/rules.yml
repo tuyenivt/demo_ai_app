@@ -1,0 +1,31 @@
+version: "3.1"
+rules:
+- rule: Greet user
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Symptom check
+  steps:
+  - intent: symptom_check
+  - action: utter_ask_symptom
+
+- rule: Medication FAQ
+  steps:
+  - intent: medication_faq
+  - action: utter_ask_medication
+
+- rule: Schedule appointment
+  steps:
+  - intent: schedule_appointment
+  - action: utter_schedule_appointment
+
+- rule: Escalate to human
+  steps:
+  - intent: escalate_to_human
+  - action: utter_escalate
+
+- rule: Collect feedback
+  steps:
+  - intent: provide_feedback
+  - action: utter_feedback
