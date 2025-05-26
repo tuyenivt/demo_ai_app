@@ -1,7 +1,12 @@
 {
     "name": "Python 3",
     "image": "mcr.microsoft.com/devcontainers/python:3.10",
-    "postCreateCommand": "pip install --upgrade pip && if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi",
+    "containerEnv": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONUNBUFFERED": "1",
+        "PIP_USE_PEP517": "1"
+    },
+    "postCreateCommand": "pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements.txt && pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_core_sci_md-0.5.4.tar.gz; fi",
     "customizations": {
         "vscode": {
             "settings": {
