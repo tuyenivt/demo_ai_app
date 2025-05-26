@@ -7,31 +7,30 @@
 ## Features
 - **Rasa NLP**: Intent recognition, entity extraction, dialogue management (spaCy, TensorFlow)
 - **FastAPI Backend**: RESTful APIs for chatbot, feedback
-- **Feedback Loop**: Collects feedback for continuous learning
 
 ## Setup
 
 ### 1. Validate pre-trained `en_core_sci_md` model
-```bash
+```shell
 python -m spacy validate
 ```
 Installed pipeline packages should included `en_core_sci_md` (which installed via `pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_core_sci_md-0.5.4.tar.gz`)
 
 ### 2. Rasa (NLP) train
-```bash
+```shell
 cd rasa
 python train_rasa.py
 ```
 The `train_rasa.py` script leverages the pre-trained `en_core_sci_md` model to train Rasa's NLU components, such as intent detection and entity extraction, specifically for handling clinical and scientific terminology in the chatbot's responses.
 
 ### 3. Test via shell (interactive console)
-```bash
+```shell
 cd rasa
 rasa shell --debug
 ```
 
 ### 4. Test via HTTP API (REST)
-```bash
+```shell
 cd rasa
 rasa run --enable-api --debug
 ```
@@ -50,4 +49,24 @@ Sample Response
     "recipient_id" : "test_user",
     "text" : "Hello! How can I assist you today?"
 }]
+```
+
+### 5. FastAPI Backend
+```shell
+uvicorn backend.main:app --reload
+```
+
+Sample Request
+```shell
+curl -X POST http://localhost:8000/chat/ -H "Content-Type: application/json" -d '{"sender_id":"test_user", "message":"hello"}'
+```
+
+Sample Response
+```shell
+{
+    "responses": [{
+        "recipient_id": "test_user",
+        "text": "Hello! How can I assist you today?"
+    }]
+}
 ```
