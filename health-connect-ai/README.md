@@ -5,8 +5,8 @@
 - Using pre-trained NLP models for clinical [scispaCy](https://github.com/allenai/scispacy) - `en_core_sci_md`: This is a medium-sized spaCy model trained on biomedical literature, enabling accurate entity recognition and text processing for medical data.
 
 ## Features
-- **Rasa NLP**: Intent recognition, entity extraction, dialogue management (spaCy, TensorFlow)
-- **FastAPI Backend**: RESTful APIs for chatbot, feedback
+- **Rasa NLP**: Intent recognition, entity extraction, dialogue management (spaCy, TensorFlow).
+- **FastAPI Backend**: RESTful APIs for chatbot, feedback.
 
 ## Setup
 
