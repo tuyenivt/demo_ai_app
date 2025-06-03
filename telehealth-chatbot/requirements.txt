@@ -1,0 +1,13 @@
+fastapi==0.115.12
+uvicorn[standard]
+slowapi
+aioredis
+langchain==0.3.25
+langchain-community
+openai
+boto3
+backoff
+python-multipart
+faiss-cpu
+unstructured
+pytest
