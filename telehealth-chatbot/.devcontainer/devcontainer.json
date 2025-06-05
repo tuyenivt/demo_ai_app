@@ -1,0 +1,26 @@
+{
+    "name": "Python 3",
+    "image": "mcr.microsoft.com/devcontainers/python:3.10",
+    "containerEnv": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONUNBUFFERED": "1",
+        "PIP_USE_PEP517": "1"
+    },
+    "postCreateCommand": "pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements-dev.txt; fi",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true,
+                "python.formatting.provider": "black",
+                "python.linting.enabled": true,
+                "python.linting.flake8Enabled": true
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+    // "forwardPorts": [], // Use 'forwardPorts' to make a list of ports inside the container available locally
+    "remoteUser": "vscode"
+}
