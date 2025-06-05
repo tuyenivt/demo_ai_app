@@ -5,13 +5,13 @@
 - It ingests documents, indexes them in FAISS, and answers user queries via a `/chat` endpoint.
 
 ## Features
-- **Document Ingestion:** Upload PDF/Markdown (via `/ingest`) or specify an S3 key. Documents are chunked, embedded, and stored in a FAISS vector index for semantic search.
+- **Document Ingestion:** Upload PDF/Markdown (via `/ingest`). Documents are chunked, embedded, and stored in a FAISS vector index for semantic search.
 - **Chat API (`/chat`):** Handles user queries, retrieves relevant context chunks, and uses GPT-4 (via LangChain) to generate answers. Includes input sanitization and prompt injection mitigation.
 - **Asynchronous & Scalable:** Uses async FastAPI endpoints to support 100+ concurrent users with <2s latency. Rate limiting and Redis caching improve performance under load.
 - **Logging & Monitoring:** Requests, responses, and errors are logged (without PII). Retry/backoff logic handles transient OpenAI API failures gracefully.
 
 ## Setup
-1. **Environment:** Copy `.env.example` to `.env` and fill in your credentials (OpenAI key, AWS S3, Redis URL, etc.).
+1. **Environment:** Copy `.env.example` to `.env` and fill in your credentials (OpenAI key, Redis URL, etc.).
 2. **Python Dependencies:** Ensure Python 3.13 is installed. Install packages:
 ```shell
 pip install -r requirements.txt
@@ -24,7 +24,7 @@ Start the FastAPI app with Uvicorn:
 uvicorn main:app --reload
 ```
 The service will listen on `http://localhost:8000`. You can send:
-- `POST /ingest` with a PDF/Markdown file or S3 key (admin only) to index documents.
+- `POST /ingest` with a PDF/Markdown file to index documents.
 - `POST /chat` with JSON `{"query": "Your question here"}` to get an answer.
 
 ## Docker Deployment
