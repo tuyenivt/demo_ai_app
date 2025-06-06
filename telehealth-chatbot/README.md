@@ -17,6 +17,9 @@
 pip install -r requirements.txt
 ```
 3. **Redis:** Run a Redis instance (locally or via URL in `.env`).
+```shell
+docker run -d --name telehealth-redis -p 6379:6379 redis:8.0-alpine
+```
 
 ## Running Locally
 Start the FastAPI app with Uvicorn:
