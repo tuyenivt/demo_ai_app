@@ -1,0 +1,10 @@
+fastapi==0.115.12
+uvicorn[standard]
+redis[hiredis]
+langchain==0.3.25
+langchain-community
+slowapi
+ollama
+qdrant-client
+python-multipart
+unstructured
