@@ -11,6 +11,7 @@ This is a demo AI-powered customer support chatbot designed to assist users with
 
 ## Start Ollama
 ```shell
+docker network create devnet
 docker run -d --network devnet --name ai-ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:0.7.1
 ```
 Environment Variable:
