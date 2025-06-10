@@ -36,21 +36,21 @@ Environment Variable:
 ```shell
 curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
-     -H "userId: 123456" \
-     -d '{"message": "What are insurance supported?"}'
+     -H "X-User-ID: test_user" \
+     -d '{"conversation_id": "test_conversation", "message": "What are insurance supported?"}'
 ```
 
 ## Test Chat Memory via REST API
 ```shell
 curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
-     -H "userId: 123456" \
-     -d '{"message": "My name is Spring"}'
+     -H "X-User-ID: test_user" \
+     -d '{"conversation_id": "test_conversation", "message": "My name is Spring"}'
 ```
 
 ```shell
 curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
-     -H "userId: 123456" \
-     -d '{"message": "Do you remember my name?"}'
+     -H "X-User-ID: test_user" \
+     -d '{"conversation_id": "test_conversation", "message": "Do you remember my name?"}'
 ```
