@@ -6,6 +6,9 @@
         "PYTHONUNBUFFERED": "1",
         "PIP_USE_PEP517": "1"
     },
+    "runArgs": [
+        "--network=devnet"
+    ],
     "postCreateCommand": "pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements-dev.txt; fi",
     "customizations": {
         "vscode": {

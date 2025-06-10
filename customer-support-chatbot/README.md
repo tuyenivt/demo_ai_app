@@ -11,26 +11,31 @@ This is a demo AI-powered customer support chatbot designed to assist users with
 
 ## Start Ollama
 ```shell
-docker run -d --name ai-ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:0.7.1
+docker run -d --network devnet --name ai-ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:0.7.1
 ```
 Environment Variable:
-- `OLLAMA_BASE_URL=http://localhost:11434`
+- `OLLAMA_BASE_URL=http://ai-ollama:11434`
 - `OLLAMA_MODEL=llama3.1`
 
 ## Start Vector DB
 ```shell
-docker run -d --name ai-qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:v1.14.1
+docker run -d --network devnet --name ai-qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:v1.14.1
 ```
 Environment Variable:
-- `QDRANT_HOST=localhost`
+- `QDRANT_HOST=ai-qdrant`
 - `QDRANT_PORT=6334`
 
 ## Start Redis
 ```shell
-docker run -d --name ai-redis -p 6379:6379 redis:8.0-alpine
+docker run -d --network devnet --name ai-redis -p 6379:6379 redis:8.0-alpine
 ```
 Environment Variable:
-- `REDIS_URL=redis://localhost:6379`
+- `REDIS_URL=redis://ai-redis:6379`
+
+## Start FastAPI Backend
+```shell
+uvicorn main:app --reload
+```
 
 ## Test via REST API
 ```shell
@@ -45,7 +50,7 @@ curl -X POST http://localhost:8000/chat \
 curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
-     -d '{"conversation_id": "test_conversation", "message": "My name is Spring"}'
+     -d '{"conversation_id": "test_conversation", "message": "My name is ABC"}'
 ```
 
 ```shell
