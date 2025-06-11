@@ -7,6 +7,7 @@ from typing import List, Optional
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct
 from dotenv import load_dotenv
+import uuid
 
 # Load environment variables from .env
 load_dotenv()
@@ -151,6 +152,16 @@ class ChatResponse(BaseModel):
     history: Optional[List[dict]] = None
 
 
+class UpsertDocumentRequest(BaseModel):
+    text: str
+    doc_id: Optional[str] = None
+
+
+class UpsertDocumentResponse(BaseModel):
+    success: bool
+    doc_id: str
+
+
 # --- Chat endpoint ---
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-User-ID")):
@@ -187,3 +198,10 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
 
     # Return last 5 turns
     return ChatResponse(response=assistant_reply, history=history[-5:])
+
+
+@app.post("/upsert-document", response_model=UpsertDocumentResponse)
+async def upsert_doc_endpoint(request: UpsertDocumentRequest):
+    doc_id = request.doc_id or str(uuid.uuid4())
+    await upsert_document_to_qdrant(QDRANT_COLLECTION, doc_id, request.text)
+    return UpsertDocumentResponse(success=True, doc_id=doc_id)
