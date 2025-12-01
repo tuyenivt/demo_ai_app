@@ -18,8 +18,9 @@ poetry add --group dev httpx black ruff pipdeptree pytest pytest-asyncio pytest-
 ```shell
 docker network create devnet
 docker run -d --network devnet --name chatbot-local-ai -p 8080:8080 localai/localai:latest
-# docker run -d --network devnet --name chatbot-local-ai -p 8080:8080 localai/localai:latest-aio-gpu-nvidia-cuda-12
 ```
+
+Go to `http://localhost:8080/browse/`, search and install `llama-doctor-3.2-3b-instruct`.
 
 ### 2. Running Locally
 
