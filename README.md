@@ -1,41 +1,53 @@
-# Customer Support Chatbot
+# Chatbot
 
 ## Overview
-This is a demo AI-powered customer support chatbot designed to assist users with inquiries about a telehealth platform. 
+This is a demo AI-powered chatbot designed to assist users with inquiries about a telehealth platform. 
 
 ## Features
-- Integration with **Ollama**, utilizing the **LLaMA 3.1** language model.
+- Integration with **LocalAI**, utilizing the **llama-doctor-3.2-3b-instruct** language model.
 - Predefined system prompts to guide chatbot behavior and maintain consistent tone.
 - **Redis** ensures persistent chat history for multi-turn conversations and supports rate limiting to prevent abuse.
 - **Qdrant** serves as the vector store for semantic search, enabling context-aware responses via Retrieval-Augmented Generation (RAG).
 
-## Start Ollama
+## Using Dependencies (poetry)
+
+```shell
+poetry new chatbot
+poetry add fastapi[standard] redis[hiredis] langchain langchain-community slowapi openai qdrant-client python-multipart unstructured
+poetry add --group dev httpx black ruff pipdeptree pytest pytest-asyncio pytest-cov
+```
+
+## Start LocalAI
 ```shell
 docker network create devnet
-docker run -d --network devnet --name ai-ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama:0.7.1
+docker run -d --network devnet --name chatbot-local-ai -p 8080:8080 localai/localai:v3.8.0
 ```
+
+Go to `http://localhost:8080/browse/`, search and install `llama-doctor-3.2-3b-instruct`.
+
 Environment Variable:
-- `OLLAMA_BASE_URL=http://ai-ollama:11434`
-- `OLLAMA_MODEL=llama3.1`
+- `OPENAI_API_KEY=NOT_REQUIRED_FOR_DEV`
+- `OPENAI_BASE_URL=http://chatbot-local-ai:8080/v1`
+- `OPENAI_MODEL=llama-doctor-3.2-3b-instruct`
 
 ## Start Vector DB
 ```shell
-docker run -d --network devnet --name ai-qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:v1.14.1
+docker run -d --network devnet --name chatbot-qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:v1.16
 ```
 Environment Variable:
-- `QDRANT_HOST=ai-qdrant`
+- `QDRANT_HOST=chatbot-qdrant`
 - `QDRANT_PORT=6334`
 
 ## Start Redis
 ```shell
-docker run -d --network devnet --name ai-redis -p 6379:6379 redis:8.0-alpine
+docker run -d --network devnet --name chatbot-redis -p 6379:6379 redis:8.4-alpine
 ```
 Environment Variable:
-- `REDIS_URL=redis://ai-redis:6379`
+- `REDIS_URL=redis://chatbot-redis:6379`
 
 ## Start FastAPI Backend
 ```shell
-uvicorn main:app --reload
+fastapi dev src/chatbot/main.py
 ```
 
 ## Test via REST API

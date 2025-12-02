@@ -1,6 +1,6 @@
 {
     "name": "Python 3",
-    "image": "mcr.microsoft.com/devcontainers/python:3.13",
+    "image": "mcr.microsoft.com/devcontainers/python:3.14",
     "containerEnv": {
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONUNBUFFERED": "1",
@@ -9,21 +9,25 @@
     "runArgs": [
         "--network=devnet"
     ],
-    "postCreateCommand": "pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements-dev.txt; fi",
+    "postCreateCommand": "pipx install poetry && poetry config virtualenvs.in-project true && poetry install --with dev",
     "customizations": {
         "vscode": {
             "settings": {
                 "editor.formatOnSave": true,
                 "python.formatting.provider": "black",
-                "python.linting.enabled": true,
-                "python.linting.flake8Enabled": true
+                "python.analysis.typeCheckingMode": "standard",
+                "python.defaultInterpreterPath": ".venv/bin/python",
+                "ruff.enable": true
             },
             "extensions": [
                 "ms-python.python",
-                "ms-python.vscode-pylance"
+                "charliermarsh.ruff",
+                "ms-toolsai.jupyter"
             ]
         }
     },
-    // "forwardPorts": [], // Use 'forwardPorts' to make a list of ports inside the container available locally
+    "forwardPorts": [
+        8000
+    ],
     "remoteUser": "vscode"
 }

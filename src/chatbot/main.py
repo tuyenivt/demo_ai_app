@@ -2,6 +2,7 @@ import os
 import redis.asyncio as redis
 import httpx
 from fastapi import FastAPI, HTTPException, Request, Header
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from qdrant_client import QdrantClient
@@ -39,7 +40,15 @@ let the user know and suggest checking back later or contacting support.
 """
 
 # --- FastAPI app ---
-app = FastAPI(title="HealthConnect AI Chatbot")
+app = FastAPI(title="Telehealth Chatbot")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("CORS_ALLOW_ORIGINS", "*").split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --- Redis client ---
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)

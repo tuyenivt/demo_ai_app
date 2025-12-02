@@ -1,6 +1,0 @@
--r requirements.txt
-pytest
-pipdeptree
-black
-flake8
-isort
