@@ -49,6 +49,7 @@ Environment Variable:
 ```shell
 fastapi dev src/chatbot/main.py
 ```
+For production: `fastapi run src/chatbot/main.py`
 
 ## Test via REST API
 ```shell

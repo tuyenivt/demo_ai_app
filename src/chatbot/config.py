@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     OPENAI_BASE_URL: str = os.getenv(
         'OPENAI_BASE_URL', 'http://chatbot-local-ai:8080/v1')
     LLM_MODEL: str = os.getenv('LLM_MODEL', 'llama-doctor-3.2-3b-instruct')
+    QDRANT_URL: str = os.getenv('QDRANT_URL', 'chatbot-qdrant:6334')
+    QDRANT_API_KEY: str = os.getenv('QDRANT_API_KEY', '')
     VECTOR_COLLECTION: str = os.getenv(
         'VECTOR_COLLECTION', 'telehealth_chatbot_docs')
     EMBEDDING_MODEL: str = 'text-embedding-3-small'
@@ -16,9 +18,12 @@ class Settings(BaseSettings):
     REINDEX_CRON: str = '0 3 * * *'  # daily 03:00
     REDIS_URL: str = os.getenv('REDIS_URL', 'redis://ai-redis:6379')
     RATE_LIMIT: int = int(os.getenv('RATE_LIMIT', '60'))  # per minute
-    QDRANT_URL: str = os.getenv('QDRANT_URL', 'chatbot-qdrant:6334')
-    QDRANT_API_KEY: str = os.getenv('QDRANT_API_KEY', '')
+    CORS_ALLOW_ORIGINS: str = os.getenv('CORS_ALLOW_ORIGINS', '*')
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+    }
 
 
-class Config:
-    env_file = '.env'
+settings = Settings()
