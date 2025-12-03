@@ -51,12 +51,17 @@ fastapi dev src/chatbot/main.py
 ```
 For production: `fastapi run src/chatbot/main.py`
 
-## Test via REST API
+## Test content ingestion
 ```shell
-curl -X POST http://localhost:8000/chat \
+curl -X POST http://localhost:8000/upsert-document \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
-     -d '{"conversation_id": "test_conversation", "message": "What are insurance supported?"}'
+     -d '{"text": "Our telehealth app allows video consultations with licensed doctors."}'
+
+curl -X POST http://localhost:8000/upsert-document \
+     -H "Content-Type: application/json" \
+     -H "X-User-ID: test_user" \
+     -d '{"text": "To schedule an appointment, tap the calendar icon and select a time slot."}'
 ```
 
 ## Test Chat Memory via REST API
@@ -65,11 +70,15 @@ curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
      -d '{"conversation_id": "test_conversation", "message": "My name is ABC"}'
-```
 
-```shell
 curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
      -d '{"conversation_id": "test_conversation", "message": "Do you remember my name?"}'
+
+curl -X POST http://localhost:8000/chat \
+     -H "Content-Type: application/json" \
+     -H "X-User-ID: test_user" \
+     -d '{"conversation_id": "test_conversation", "message": "What are insurance supported?"}'
+
 ```
