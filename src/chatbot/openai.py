@@ -1,10 +1,12 @@
-import httpx
 import backoff
 
 from typing import List
 from fastapi import HTTPException
-from chatbot.config import settings
+from httpx import HTTPStatusError
 from openai import AsyncOpenAI
+
+from chatbot.config import settings
+from chatbot.util import should_retry_http
 
 
 openai_client = AsyncOpenAI(
@@ -14,7 +16,16 @@ openai_client = AsyncOpenAI(
 )
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=3)
+@backoff.on_exception(
+    backoff.expo,
+    HTTPStatusError,
+    max_tries=5,
+    max_time=20,
+    giveup=lambda e: not should_retry_http(e),
+    on_backoff=lambda details: print(
+        f"openai.query_openai retried {details['tries']} times"
+    )
+)
 async def query_openai(messages: List) -> str:
     """Send messages to OpenAI's /v1/chat/completions and return the response."""
     try:
@@ -35,7 +46,16 @@ async def query_openai(messages: List) -> str:
         raise HTTPException(status_code=500, detail=f"OpenAI error: {e}")
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=3)
+@backoff.on_exception(
+    backoff.expo,
+    HTTPStatusError,
+    max_tries=5,
+    max_time=20,
+    giveup=lambda e: not should_retry_http(e),
+    on_backoff=lambda details: print(
+        f"openai.get_embedding retried {details['tries']} times"
+    )
+)
 async def get_embedding(text: str) -> list:
     """Get embedding vector for a given text using OpenAI's /v1/embeddings endpoint."""
     try:
