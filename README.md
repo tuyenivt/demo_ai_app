@@ -51,14 +51,14 @@ fastapi dev src/chatbot/main.py
 ```
 For production: `fastapi run src/chatbot/main.py`
 
-## Test content ingestion
+## Test content upsertion
 ```shell
-curl -X POST http://localhost:8000/upsert-document \
+curl -X POST http://localhost:8000/upsert-text \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
      -d '{"text": "Our telehealth app allows video consultations with licensed doctors."}'
 
-curl -X POST http://localhost:8000/upsert-document \
+curl -X POST http://localhost:8000/upsert-text \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
      -d '{"text": "To schedule an appointment, tap the calendar icon and select a time slot."}'

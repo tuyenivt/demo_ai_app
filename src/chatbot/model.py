@@ -12,11 +12,11 @@ class ChatResponse(BaseModel):
     history: Optional[List[dict]] = None
 
 
-class UpsertDocumentRequest(BaseModel):
+class UpsertTextRequest(BaseModel):
     text: str
     doc_id: Optional[str] = None
 
 
-class UpsertDocumentResponse(BaseModel):
+class UpsertResponse(BaseModel):
     success: bool
     doc_id: str

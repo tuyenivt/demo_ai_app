@@ -10,7 +10,7 @@ qdrant_client = QdrantClient(
     url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 
-async def upsert_document_to_qdrant(collection: str, doc_id: str, text: str):
+async def upsert_text_to_qdrant(collection: str, doc_id: str, text: str):
     embedding = await get_embedding(text)
     point = PointStruct(id=doc_id, vector=embedding, payload={"text": text})
     qdrant_client.upsert(collection_name=collection, points=[point])
