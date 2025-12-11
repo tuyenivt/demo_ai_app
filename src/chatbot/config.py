@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     TOP_K_RETRIEVAL: int = 6
     REINDEX_CRON: str = '0 3 * * *'  # daily 03:00
     REDIS_URL: str = os.getenv('REDIS_URL', 'redis://ai-redis:6379')
-    RATE_LIMIT: int = int(os.getenv('RATE_LIMIT', '60'))  # per minute
+    RATE_LIMIT: str = os.getenv('RATE_LIMIT', '60/minute')
     CORS_ALLOW_ORIGINS: str = os.getenv('CORS_ALLOW_ORIGINS', '*')
 
     model_config = {

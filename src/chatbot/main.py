@@ -1,9 +1,12 @@
 import os
+import uuid
 
 from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 
-import uuid
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from chatbot.cache import check_rate_limit, get_chat_history, set_chat_history
 from chatbot.config import settings
@@ -29,7 +32,11 @@ let the user know and suggest checking back later or contacting support.
 """
 
 
-# --- FastAPI app ---
+# Initialize slowapi Limiter
+limiter = Limiter(key_func=get_remote_address)
+
+
+# Initialize app, CORS, and rate limiter
 app = FastAPI(title=settings.APP_NAME)
 
 
@@ -42,7 +49,12 @@ app.add_middleware(
 )
 
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
 @app.post("/chat", response_model=ChatResponse)
+@limiter.limit(settings.RATE_LIMIT)
 async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-User-ID")):
     data = await request.json()
     user_message = data.get("message")
@@ -80,6 +92,7 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
 
 
 @app.post("/upsert-document", response_model=UpsertDocumentResponse)
+@limiter.limit(settings.RATE_LIMIT)
 async def upsert_doc_endpoint(request: UpsertDocumentRequest):
     doc_id = request.doc_id or str(uuid.uuid4())
     await upsert_document_to_qdrant(settings.VECTOR_COLLECTION, doc_id, request.text)
