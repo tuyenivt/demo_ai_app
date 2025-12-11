@@ -1,21 +1,9 @@
 import json
 import redis.asyncio as redis
 
-from fastapi import HTTPException
-
 from chatbot.config import settings
 
 redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
-
-
-async def check_rate_limit(user_id: str):
-    key = f"rate_limit:{user_id}"
-    count = await redis_client.incr(key)
-    if count == 1:
-        await redis_client.expire(key, 60)
-    if count > settings.RATE_LIMIT:
-        raise HTTPException(
-            status_code=429, detail="Rate limit exceeded. Please wait.")
 
 
 async def get_chat_history(user_id: str, conversation_id: str) -> list:

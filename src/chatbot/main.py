@@ -8,7 +8,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from chatbot.cache import check_rate_limit, get_chat_history, set_chat_history
+from chatbot.cache import get_chat_history, set_chat_history
 from chatbot.config import settings
 from chatbot.model import ChatResponse, UpsertTextRequest, UpsertResponse
 from chatbot.openai import query_openai
@@ -33,7 +33,7 @@ let the user know and suggest checking back later or contacting support.
 
 
 # Initialize slowapi Limiter
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_remote_address, storage_uri=settings.REDIS_URL)
 
 
 # Initialize app, CORS, and rate limiter
@@ -61,7 +61,6 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
     if not user_message:
         raise HTTPException(
             status_code=400, detail="Missing message in request body.")
-    await check_rate_limit(userId)
 
     # Retrieve chat history for this conversation
     conversationId = data.get("conversation_id")
