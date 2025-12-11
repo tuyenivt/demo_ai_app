@@ -10,7 +10,7 @@ from slowapi.errors import RateLimitExceeded
 
 from chatbot.cache import get_chat_history, set_chat_history
 from chatbot.config import settings
-from chatbot.model import ChatResponse, UpsertTextRequest, UpsertResponse
+from chatbot.model import ChatResponse, UpsertResponse
 from chatbot.openai import query_openai
 from chatbot.qdrant_client import retrieve_context_from_qdrant, upsert_text_to_qdrant
 
@@ -92,7 +92,8 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
 
 @app.post("/upsert-text", response_model=UpsertResponse)
 @limiter.limit(settings.RATE_LIMIT)
-async def upsert_text_endpoint(request: UpsertTextRequest):
-    doc_id = request.doc_id or str(uuid.uuid7())
-    await upsert_text_to_qdrant(settings.VECTOR_COLLECTION, doc_id, request.text)
+async def upsert_text_endpoint(request: Request):
+    data = await request.json()
+    doc_id = data.get("doc_id") or str(uuid.uuid4())
+    await upsert_text_to_qdrant(settings.VECTOR_COLLECTION, doc_id, data.get("text"))
     return UpsertResponse(success=True, doc_id=doc_id)

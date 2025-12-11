@@ -60,7 +60,7 @@ async def get_embedding(text: str) -> list:
     """Get embedding vector for a given text using OpenAI's /v1/embeddings endpoint."""
     try:
         response = await openai_client.embeddings.create(
-            model=settings.LLM_MODEL,
+            model=settings.EMBEDDING_MODEL,
             input=text
         )
         if not response.data:

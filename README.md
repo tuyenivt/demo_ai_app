@@ -32,11 +32,18 @@ Environment Variable:
 
 ## Start Vector DB
 ```shell
-docker run -d --network devnet --name chatbot-qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:v1.16
+docker run -d --network devnet --name chatbot-qdrant -p 6333:6333 qdrant/qdrant:v1.16
 ```
 Environment Variable:
-- `QDRANT_HOST=chatbot-qdrant`
-- `QDRANT_PORT=6334`
+- `QDRANT_URL=http://chatbot-qdrant:6333`
+
+Go to Qdrant Collections page `http://localhost:6333/dashboard#/collections`, create sample collection:
+- Name your collection: `telehealth_chatbot_docs`
+- What's your use case?: `Global search`
+- What to use for search?: `Simple Single embedding`
+- Vector configuration:
+  - Choose dimensions: `384` (`sentence-transformers/all-MiniLM-L6-v2`) or `1536` (`openai-ai/text-embedding-3-small`)
+  - Choose metric: `Cosine`
 
 ## Start Redis
 ```shell

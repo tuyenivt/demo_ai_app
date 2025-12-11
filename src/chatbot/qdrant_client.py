@@ -1,8 +1,8 @@
 import logging
-from qdrant_client import QdrantClient
+from qdrant_client import QdrantClient, models
 from qdrant_client.http.models import PointStruct
 
-from chatbot.config import settings
+from chatbot.config import AppEnv, settings
 from chatbot.openai import get_embedding
 
 
@@ -11,7 +11,10 @@ qdrant_client = QdrantClient(
 
 
 async def upsert_text_to_qdrant(collection: str, doc_id: str, text: str):
-    embedding = await get_embedding(text)
+    if settings.APP_ENV == AppEnv.development:
+        embedding = models.Document(text=text, model=settings.EMBEDDING_MODEL)
+    else:
+        embedding = await get_embedding(text)
     point = PointStruct(id=doc_id, vector=embedding, payload={"text": text})
     qdrant_client.upsert(collection_name=collection, points=[point])
 

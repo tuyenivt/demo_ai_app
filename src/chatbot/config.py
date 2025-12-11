@@ -1,5 +1,13 @@
 import os
+
+from enum import Enum
 from pydantic_settings import BaseSettings
+
+
+class AppEnv(str, Enum):
+    development = "development"
+    staging = "staging"
+    production = "production"
 
 
 class Settings(BaseSettings):
@@ -8,7 +16,9 @@ class Settings(BaseSettings):
     OPENAI_BASE_URL: str = os.getenv(
         'OPENAI_BASE_URL', 'http://chatbot-local-ai:8080/v1')
     LLM_MODEL: str = os.getenv('LLM_MODEL', 'llama-doctor-3.2-3b-instruct')
-    QDRANT_URL: str = os.getenv('QDRANT_URL', 'chatbot-qdrant:6334')
+    EMBEDDING_MODEL: str = os.getenv(
+        'EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
+    QDRANT_URL: str = os.getenv('QDRANT_URL', 'http://chatbot-qdrant:6333')
     QDRANT_API_KEY: str = os.getenv('QDRANT_API_KEY', '')
     VECTOR_COLLECTION: str = os.getenv(
         'VECTOR_COLLECTION', 'telehealth_chatbot_docs')
@@ -19,6 +29,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = os.getenv('REDIS_URL', 'redis://ai-redis:6379')
     RATE_LIMIT: str = os.getenv('RATE_LIMIT', '60/minute')
     CORS_ALLOW_ORIGINS: str = os.getenv('CORS_ALLOW_ORIGINS', '*')
+    APP_ENV: AppEnv = AppEnv.development
 
     model_config = {
         "env_file": ".env",
