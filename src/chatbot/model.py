@@ -15,3 +15,8 @@ class ChatResponse(BaseModel):
 class UpsertResponse(BaseModel):
     success: bool
     doc_id: str
+
+
+class UpsertFileResponse(BaseModel):
+    success: bool
+    doc_ids: list[str]

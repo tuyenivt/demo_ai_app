@@ -1,8 +1,14 @@
+import logging
 import os
+import tempfile
 import uuid
 
-from fastapi import FastAPI, HTTPException, Request, Header
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Header
 from fastapi.middleware.cors import CORSMiddleware
+
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -10,9 +16,9 @@ from slowapi.errors import RateLimitExceeded
 
 from chatbot.cache import get_chat_history, set_chat_history
 from chatbot.config import settings
-from chatbot.model import ChatResponse, UpsertResponse
+from chatbot.model import ChatResponse, UpsertResponse, UpsertFileResponse
 from chatbot.openai import query_openai
-from chatbot.qdrant_client import retrieve_context_from_qdrant, upsert_text_to_qdrant
+from chatbot.qdrant_client import retrieve_context_from_qdrant, upsert_text_to_qdrant, upsert_langchain_docs_to_qdrant
 
 
 # --- System prompt ---
@@ -51,6 +57,11 @@ app.add_middleware(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+# Setup logging
+logger = logging.getLogger("chatbot")
+logger.setLevel(logging.INFO)
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -97,3 +108,46 @@ async def upsert_text_endpoint(request: Request):
     doc_id = data.get("doc_id") or str(uuid.uuid4())
     await upsert_text_to_qdrant(settings.VECTOR_COLLECTION, doc_id, data.get("text"))
     return UpsertResponse(success=True, doc_id=doc_id)
+
+
+@app.post("/upsert-file")
+@limiter.limit(settings.RATE_LIMIT)
+async def upsert_file_endpoint(request: Request, file: UploadFile = File(None)):
+    try:
+        # Get file content from upload
+        if file is not None and file.filename is not None:
+            content = await file.read()
+            file_ext = file.filename.split(".")[-1].lower()
+        else:
+            raise HTTPException(
+                status_code=400, detail="No file provided.")
+
+        # Save to temporary file and load
+        if file_ext == "pdf":
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=file_ext)
+            tmp.write(content)
+            tmp.flush()
+            tmp.close()
+            loader = PyPDFLoader(tmp.name)
+        elif file_ext == "md":
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=file_ext)
+            tmp.write(content)
+            tmp.flush()
+            tmp.close()
+            loader = UnstructuredMarkdownLoader(tmp.name)
+        else:
+            raise HTTPException(
+                status_code=400, detail="Unsupported file type.")
+
+        # Chunk document into 1024-token pieces
+        documents = loader.load()
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1024, chunk_overlap=200)
+        docs = splitter.split_documents(documents)
+
+        doc_ids = await upsert_langchain_docs_to_qdrant(settings.VECTOR_COLLECTION, docs)
+        return UpsertFileResponse(success=True, doc_ids=doc_ids)
+    except Exception as e:
+        logger.error(f"upsertion error: {e}")
+        raise HTTPException(
+            status_code=500, detail="Document upsertion failed.")

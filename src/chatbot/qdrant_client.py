@@ -1,22 +1,49 @@
 import logging
+import uuid
+
 from qdrant_client import QdrantClient, models
 from qdrant_client.http.models import PointStruct
 
 from chatbot.config import AppEnv, settings
-from chatbot.openai import get_embedding
+from chatbot.openai import get_openai_embedding
+
+from langchain_core.documents import Document
 
 
 qdrant_client = QdrantClient(
     url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 
-async def upsert_text_to_qdrant(collection: str, doc_id: str, text: str):
+async def get_embedding(text):
     if settings.APP_ENV == AppEnv.development:
-        embedding = models.Document(text=text, model=settings.EMBEDDING_MODEL)
+        return models.Document(text=text, model=settings.EMBEDDING_MODEL)
     else:
-        embedding = await get_embedding(text)
+        return await get_openai_embedding(text)
+
+
+async def upsert_text_to_qdrant(collection: str, doc_id: str, text: str):
+    embedding = await get_embedding(text)
     point = PointStruct(id=doc_id, vector=embedding, payload={"text": text})
     qdrant_client.upsert(collection_name=collection, points=[point])
+
+
+async def upsert_langchain_docs_to_qdrant(collection: str, docs: list[Document]) -> list[str]:
+    points = []
+    doc_ids = []
+
+    for doc in docs:
+        doc_id = str(uuid.uuid4())
+        text = doc.page_content
+        metadata = doc.metadata
+        embedding = await get_embedding(text)
+        point = PointStruct(id=doc_id, vector=embedding,
+                            payload={"text": text, **metadata})
+        points.append(point)
+        doc_ids.append(doc_id)
+
+    qdrant_client.upsert(collection_name=collection, points=points)
+
+    return doc_ids
 
 
 async def search_qdrant(collection: str, query: str, top_k: int = 3) -> list:

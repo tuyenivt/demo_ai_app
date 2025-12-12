@@ -13,8 +13,8 @@ This is a demo AI-powered chatbot designed to assist users with inquiries about 
 
 ```shell
 poetry new chatbot
-poetry add fastapi[standard] redis[hiredis] langchain langchain-community slowapi openai qdrant-client python-multipart unstructured pybreaker
-poetry add --group dev httpx black ruff pipdeptree pytest pytest-asyncio pytest-cov
+poetry add fastapi[standard] redis[hiredis] langchain-community langchain-text-splitters slowapi openai qdrant-client unstructured markdown pybreaker
+poetry add --group dev httpx black ruff pytest-asyncio pytest-cov
 ```
 
 ## Start LocalAI
@@ -69,6 +69,10 @@ curl -X POST http://localhost:8000/upsert-text \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
      -d '{"text": "To schedule an appointment, tap the calendar icon and select a time slot."}'
+
+curl -X POST http://localhost:8000/upsert-file -F "file=@sample_upsert_1.pdf"
+
+curl -X POST http://localhost:8000/upsert-file -F "file=@sample_upsert_2.md"
 ```
 
 ## Test Chat Memory via REST API
@@ -87,5 +91,4 @@ curl -X POST http://localhost:8000/chat \
      -H "Content-Type: application/json" \
      -H "X-User-ID: test_user" \
      -d '{"conversation_id": "test_conversation", "message": "What are insurance supported?"}'
-
 ```

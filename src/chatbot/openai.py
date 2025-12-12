@@ -56,7 +56,7 @@ async def query_openai(messages: List) -> str:
         f"openai.get_embedding retried {details['tries']} times"
     )
 )
-async def get_embedding(text: str) -> list:
+async def get_openai_embedding(text: str) -> list:
     """Get embedding vector for a given text using OpenAI's /v1/embeddings endpoint."""
     try:
         response = await openai_client.embeddings.create(
