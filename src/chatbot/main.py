@@ -14,7 +14,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from chatbot.cache import get_chat_history, set_chat_history
+from chatbot.cache import get_chat_cache, set_chat_cache, get_chat_history, set_chat_history
 from chatbot.config import settings
 from chatbot.model import ChatResponse, UpsertResponse, UpsertFileResponse
 from chatbot.openai import query_openai
@@ -72,10 +72,16 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
     if not user_message:
         raise HTTPException(
             status_code=400, detail="Missing message in request body.")
+    conversation_id = data.get("conversation_id")
+
+    # Check Redis cache
+    cached_answer = await get_chat_cache(userId, conversation_id, user_message)
+    if cached_answer:
+        logger.info("Cache hit for query.")
+        return ChatResponse(response=cached_answer, history=[])
 
     # Retrieve chat history for this conversation
-    conversationId = data.get("conversation_id")
-    history = await get_chat_history(userId, conversationId)
+    history = await get_chat_history(userId, conversation_id)
 
     # Retrieve context from Qdrant (RAG)
     context = await retrieve_context_from_qdrant(user_message, settings.TOP_K_RETRIEVAL)
@@ -93,9 +99,12 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
     # Query OpenAI
     assistant_reply = await query_openai(messages)
 
+    # Update cache
+    await set_chat_cache(userId, conversation_id, user_message, assistant_reply)
+
     # Update history
     history.append({"user": user_message, "assistant": assistant_reply})
-    await set_chat_history(userId, conversationId, history)
+    await set_chat_history(userId, conversation_id, history)
 
     # Return last 5 turns
     return ChatResponse(response=assistant_reply, history=history[-5:])
