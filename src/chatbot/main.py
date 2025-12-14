@@ -74,14 +74,14 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
             status_code=400, detail="Missing message in request body.")
     conversation_id = data.get("conversation_id")
 
+    # Retrieve chat history for this conversation
+    history = await get_chat_history(userId, conversation_id)
+
     # Check Redis cache
     cached_answer = await get_chat_cache(userId, conversation_id, user_message)
     if cached_answer:
         logger.info("Cache hit for query.")
-        return ChatResponse(response=cached_answer, history=[])
-
-    # Retrieve chat history for this conversation
-    history = await get_chat_history(userId, conversation_id)
+        return ChatResponse(response=cached_answer, history=history[-5:])
 
     # Retrieve context from Qdrant (RAG)
     context = await retrieve_context_from_qdrant(user_message, settings.TOP_K_RETRIEVAL)
