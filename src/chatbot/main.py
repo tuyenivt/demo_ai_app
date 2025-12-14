@@ -81,7 +81,7 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
     cached_answer = await get_chat_cache(userId, conversation_id, user_message)
     if cached_answer:
         logger.info("Cache hit for query.")
-        return ChatResponse(response=cached_answer, history=history[-5:])
+        return ChatResponse(response=cached_answer, history=history[-10:])
 
     # Retrieve context from Qdrant (RAG)
     context = await retrieve_context_from_qdrant(user_message, settings.TOP_K_RETRIEVAL)
@@ -106,8 +106,8 @@ async def chat_endpoint(request: Request, userId: str = Header(..., alias="X-Use
     history.append({"user": user_message, "assistant": assistant_reply})
     await set_chat_history(userId, conversation_id, history)
 
-    # Return last 5 turns
-    return ChatResponse(response=assistant_reply, history=history[-5:])
+    # Return last 10 turns
+    return ChatResponse(response=assistant_reply, history=history[-10:])
 
 
 @app.post("/upsert-text", response_model=UpsertResponse)
