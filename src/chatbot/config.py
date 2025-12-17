@@ -11,6 +11,7 @@ class AppEnv(str, Enum):
 
 
 class Settings(BaseSettings):
+    APP_ENV: AppEnv = AppEnv.development
     APP_NAME: str = 'Telehealth Chatbot'
     OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY', '')
     OPENAI_BASE_URL: str = os.getenv(
@@ -29,7 +30,8 @@ class Settings(BaseSettings):
     REDIS_URL: str = os.getenv('REDIS_URL', 'redis://ai-redis:6379')
     RATE_LIMIT: str = os.getenv('RATE_LIMIT', '60/minute')
     CORS_ALLOW_ORIGINS: str = os.getenv('CORS_ALLOW_ORIGINS', '*')
-    APP_ENV: AppEnv = AppEnv.development
+    DATABASE_URL: str = os.getenv(
+        'DATABASE_URL', 'postgres://username:password@chatbot-postgres:5432/chatbotdb')
 
     model_config = {
         "env_file": ".env",

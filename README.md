@@ -52,6 +52,13 @@ docker run -d --network devnet --name chatbot-redis -p 6379:6379 redis:8.4-alpin
 Environment Variable:
 - `REDIS_URL=redis://chatbot-redis:6379`
 
+## Start Database
+```shell
+docker run -d --network devnet --name chatbot-postgres -e POSTGRES_USER=username -e POSTGRES_PASSWORD=password -e POSTGRES_DB=chatbotdb -p 5432:5432 postgres:18.1-alpine
+```
+Environment Variable:
+- `DATABASE_URL=postgres://username:password@chatbot-postgres:5432/chatbotdb`
+
 ## Start FastAPI Backend
 ```shell
 fastapi dev src/chatbot/main.py
