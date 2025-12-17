@@ -13,7 +13,7 @@ This is a demo AI-powered chatbot designed to assist users with inquiries about 
 
 ```shell
 poetry new chatbot
-poetry add fastapi[standard] redis[hiredis] langchain-community langchain-text-splitters slowapi openai qdrant-client unstructured markdown pybreaker
+poetry add fastapi[standard] redis[hiredis] langchain-community langchain langgraph slowapi openai qdrant-client unstructured markdown pybreaker
 poetry add --group dev httpx black ruff pytest-asyncio pytest-cov
 ```
 
